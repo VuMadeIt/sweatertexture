@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sweater Texture — Stitch</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="brand">Sweater Texture</p>
+        <h1>Soft yarn stitch</h1>
+        <p class="lede">
+          One knit stitch: airbrushed fiber, vertical streaks, full uncovered shape.
+        </p>
+      </header>
+
+      <section class="stage" aria-label="Stitch preview">
+        <canvas id="stitch" width="640" height="640"></canvas>
+      </section>
+
+      <section class="controls" aria-label="Preview controls">
+        <label>
+          Grid
+          <input id="cols" type="range" min="1" max="12" value="1" />
+          <span id="cols-val">1×1</span>
+        </label>
+        <label>
+          Softness
+          <input id="soft" type="range" min="0.4" max="1.4" step="0.05" value="1" />
+        </label>
+      </section>
+    </main>
+    <script type="module" src="stitch.js"></script>
+  </body>
+</html>
