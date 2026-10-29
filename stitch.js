@@ -5,35 +5,37 @@ const softInput = document.getElementById("soft");
 const colsVal = document.getElementById("cols-val");
 
 const stitchImg = new Image();
+stitchImg.decoding = "async";
 stitchImg.src = "./assets/stitch-unit.jpg";
 
+function fiberPass(w, h, softness) {
+  ctx.save();
+  ctx.globalCompositeOperation = "soft-light";
+  for (let i = 0; i < 9; i++) {
+    const x = ((i + 0.5) / 9) * w;
+    const grad = ctx.createLinearGradient(x - 6, 0, x + 6, 0);
+    const a = 0.05 * softness * (i % 2 === 0 ? 1 : 0.55);
+    grad.addColorStop(0, "rgba(255,255,255,0)");
+    grad.addColorStop(0.5, `rgba(255,255,255,${a})`);
+    grad.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = grad;
+    ctx.fillRect(x - 8, 0, 16, h);
+  }
+  ctx.restore();
+}
+
 function drawStitchCell(x, y, size, softness) {
-  const pad = size * 0.06;
+  const pad = size * 0.02;
   const w = size - pad * 2;
   const h = size - pad * 2;
 
   ctx.save();
   ctx.translate(x + pad, y + pad);
-
-  // Soft halo so edges feather like the airbrush ref
-  ctx.shadowColor = `rgba(255, 255, 255, ${0.18 * softness})`;
-  ctx.shadowBlur = 18 * softness;
-
-  ctx.globalAlpha = 0.92 + 0.08 * Math.min(softness, 1);
+  ctx.shadowColor = `rgba(245, 240, 232, ${0.2 * softness})`;
+  ctx.shadowBlur = 20 * softness;
+  // Full unit asset: soft airbrush texture + complete uncovered shape
   ctx.drawImage(stitchImg, 0, 0, w, h);
-
-  // Vertical fiber streaks (the texture from the detailed ref)
-  const streak = ctx.createLinearGradient(0, 0, w * 0.15, 0);
-  streak.addColorStop(0, "rgba(255,255,255,0)");
-  streak.addColorStop(0.5, `rgba(255,255,255,${0.07 * softness})`);
-  streak.addColorStop(1, "rgba(255,255,255,0)");
-  ctx.globalCompositeOperation = "soft-light";
-  for (let i = 0; i < 7; i++) {
-    const sx = (w * (i + 0.5)) / 7;
-    ctx.fillStyle = streak;
-    ctx.fillRect(sx - w * 0.04, 0, w * 0.08, h);
-  }
-
+  fiberPass(w, h, softness);
   ctx.restore();
 }
 
@@ -48,19 +50,15 @@ function render() {
 
   for (let row = 0; row < cols; row++) {
     for (let col = 0; col < cols; col++) {
-      // Offset odd rows slightly for a knit-row feel
-      const ox = row % 2 === 1 ? size * 0.08 : 0;
+      const ox = cols > 1 && row % 2 === 1 ? size * 0.1 : 0;
       drawStitchCell(col * size + ox, row * size, size, softness);
     }
   }
 }
 
 function ready() {
-  if (!stitchImg.complete) {
-    stitchImg.addEventListener("load", render, { once: true });
-  } else {
-    render();
-  }
+  if (stitchImg.complete && stitchImg.naturalWidth) render();
+  else stitchImg.addEventListener("load", render, { once: true });
 }
 
 colsInput.addEventListener("input", render);

@@ -4,8 +4,8 @@
   "private": true,
   "description": "Soft yarn stitch textures for a Christmas sweater",
   "scripts": {
-    "start": "npx --yes serve . -p 5173",
-    "dev": "npx --yes serve . -p 5173"
+    "start": "npx --yes serve . -p 5188",
+    "dev": "npx --yes serve . -p 5188"
   },
   "license": "ISC"
 }
