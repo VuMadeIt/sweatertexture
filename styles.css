@@ -1,0 +1,103 @@
+:root {
+  --bg: #050505;
+  --ink: #f4f1ec;
+  --muted: #9a958c;
+  --stage: #000;
+  --accent: #c45c4a;
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-body: "Segoe UI", "Helvetica Neue", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background:
+    radial-gradient(1200px 700px at 50% -10%, #1a1512 0%, transparent 55%),
+    radial-gradient(900px 500px at 100% 100%, #12100e 0%, transparent 45%),
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+main {
+  width: min(920px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 2.5rem 0 4rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.brand {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(2rem, 5vw, 3rem);
+  letter-spacing: -0.02em;
+}
+
+.lede {
+  margin: 0.65rem auto 0;
+  max-width: 34rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.stage {
+  display: grid;
+  place-items: center;
+  background: var(--stage);
+  border: 1px solid #1d1d1d;
+  min-height: min(72vw, 640px);
+  overflow: hidden;
+}
+
+#stitch {
+  width: min(100%, 640px);
+  height: auto;
+  display: block;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 2rem;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+
+label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+input[type="range"] {
+  width: min(220px, 70vw);
+  accent-color: var(--accent);
+}
+
+#cols-val {
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: 0;
+}
