@@ -1,0 +1,11 @@
+{
+  "name": "sweatertexture",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Soft yarn stitch textures for a Christmas sweater",
+  "scripts": {
+    "start": "npx --yes serve . -p 5173",
+    "dev": "npx --yes serve . -p 5173"
+  },
+  "license": "ISC"
+}
