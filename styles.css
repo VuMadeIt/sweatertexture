@@ -69,7 +69,7 @@ h1 {
 }
 
 #stitch {
-  width: min(100%, 640px);
+  width: 100%;
   height: auto;
   display: block;
 }
@@ -96,8 +96,65 @@ input[type="range"] {
   accent-color: var(--accent);
 }
 
-#cols-val {
+.val {
   color: var(--ink);
   text-transform: none;
   letter-spacing: 0;
+}
+
+.controls {
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.swatch {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.swatch input[type="text"] {
+  width: 7.5rem;
+  text-transform: none;
+}
+
+.swatch input[aria-invalid="true"] {
+  border-color: #e04b3c;
+}
+
+button,
+select,
+input[type="text"],
+input[type="file"] {
+  font: inherit;
+  color: var(--ink);
+  background: #151311;
+  border: 1px solid #2c2925;
+  padding: 0.5rem 0.9rem;
+}
+
+button {
+  cursor: pointer;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+input[type="color"] {
+  width: 4rem;
+  height: 2.2rem;
+  border: 0;
+  background: none;
+}
+
+#status {
+  min-height: 1.2em;
+  margin: 0 0 0.75rem;
+  text-align: center;
+  color: var(--muted);
 }

@@ -3,32 +3,68 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sweater Texture — Stitch</title>
+    <title>Sweaterify — Knit any image</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main>
       <header>
-        <p class="brand">Sweater Texture</p>
-        <h1>Soft yarn stitch</h1>
+        <p class="brand">Sweaterify</p>
+        <h1>Knit any image</h1>
         <p class="lede">
-          One knit stitch: airbrushed fiber, vertical streaks, full uncovered shape.
+          Upload an image and every square of the grid gets a heart stitch, like a Christmas sweater.
         </p>
       </header>
 
-      <section class="stage" aria-label="Stitch preview">
-        <canvas id="stitch" width="640" height="640"></canvas>
+      <section class="controls" aria-label="Image">
+        <label class="file">
+          Upload image
+          <input id="file" type="file" accept="image/*" />
+        </label>
+        <button id="copy" type="button">Copy</button>
+        <button id="download" type="button">Download PNG</button>
+        <button id="download-bg" type="button">Download background</button>
+      </section>
+      <p id="status" role="status"></p>
+
+      <section class="stage" aria-label="Sweater preview">
+        <canvas id="stitch" width="3000" height="1500"></canvas>
       </section>
 
-      <section class="controls" aria-label="Preview controls">
+      <section class="controls" aria-label="Stitch settings">
         <label>
-          Grid
-          <input id="cols" type="range" min="1" max="12" value="1" />
-          <span id="cols-val">1×1</span>
+          Stitch size <span id="size-val" class="val"></span>
+          <input id="size" type="range" min="12" max="160" value="44" />
         </label>
         <label>
-          Softness
-          <input id="soft" type="range" min="0.4" max="1.4" step="0.05" value="1" />
+          Sensitivity
+          <input id="threshold" type="range" min="0.05" max="0.8" step="0.01" value="0.25" />
+        </label>
+        <label>
+          Heart colour
+          <span class="swatch">
+            <input id="color" type="color" value="#f4f1ec" />
+            <input id="color-hex" type="text" value="#f4f1ec" aria-label="Heart colour hex code" spellcheck="false" />
+          </span>
+        </label>
+        <label class="check">
+          <input id="use-image" type="checkbox" />
+          Use image colours
+        </label>
+        <label>
+          Background
+          <select id="bg-mode">
+            <option value="knit">Knitted</option>
+            <option value="flat">Flat</option>
+            <option value="none">Transparent</option>
+          </select>
+        </label>
+        <label>
+          Background colour
+          <span class="swatch">
+            <input id="bg" type="color" value="#a3152a" />
+            <input id="bg-hex" type="text" value="#a3152a" aria-label="Background colour hex code" spellcheck="false" />
+          </span>
         </label>
       </section>
     </main>

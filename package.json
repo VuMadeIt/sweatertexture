@@ -1,9 +1,11 @@
 {
-  "name": "sweatertexture",
+  "name": "sweaterify",
   "version": "1.0.0",
   "private": true,
-  "description": "Soft yarn stitch textures for a Christmas sweater",
+  "description": "Sweaterify — turn any image into a Christmas sweater knit",
+  "type": "module",
   "scripts": {
+    "test": "node --test",
     "start": "npx --yes serve . -p 5188",
     "dev": "npx --yes serve . -p 5188"
   },
