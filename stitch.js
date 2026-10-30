@@ -27,91 +27,50 @@ function demoSource() {
   return c;
 }
 
-function heartPath(g, w, h) {
-  g.beginPath();
-  g.moveTo(w * 0.5, h * 0.26);
-  g.bezierCurveTo(w * 0.5, h * 0.02, w * 0.02, h * -0.02, w * 0.02, h * 0.32);
-  g.bezierCurveTo(w * 0.02, h * 0.6, w * 0.3, h * 0.8, w * 0.5, h * 0.98);
-  g.bezierCurveTo(w * 0.7, h * 0.8, w * 0.98, h * 0.6, w * 0.98, h * 0.32);
-  g.bezierCurveTo(w * 0.98, h * -0.02, w * 0.5, h * 0.02, w * 0.5, h * 0.26);
-  g.closePath();
-}
+// Seamless stockinette photo, multiply-tinted per colour then stamped on the grid.
+const knitTex = new Image();
+knitTex.decoding = "async";
+knitTex.src = "./assets/knit-stockinette.png";
+knitTex.decode().then(() => { tinted.clear(); schedule(); }).catch(() => {});
 
-// Airbrush stroke: draw the line off-canvas and keep only its blurred shadow (canvas `filter` isn't in Safari).
-const AWAY = 10000;
-function airbrush(g, color, width, blur, pts) {
-  g.strokeStyle = g.shadowColor = color;
-  g.lineWidth = width;
-  g.shadowBlur = blur;
-  g.shadowOffsetX = AWAY;
-  g.beginPath();
-  g.moveTo(pts[0] - AWAY, pts[1]);
-  g.quadraticCurveTo(pts[2] - AWAY, pts[3], pts[4] - AWAY, pts[5]);
-  g.stroke();
-  g.shadowOffsetX = 0;
-}
-
-// One airbrushed heart stitch, rendered once per colour/size and then stamped.
-const sprites = new Map();
-function sprite(color, cell) {
-  const key = color + cell;
-  if (sprites.has(key)) return sprites.get(key);
-  const w = cell * 1.1;
-  const h = cell * 1.18; // bigger than the grid square, so stitches overlap (spacing under 100%)
-  const pad = Math.ceil(cell * 0.2);
+const tinted = new Map();
+function tintedKnit(color) {
+  if (tinted.has(color)) return tinted.get(color);
   const c = document.createElement("canvas");
-  c.width = Math.ceil(w + pad * 2);
-  c.height = Math.ceil(h + pad * 2);
-  const g = c.getContext("2d");
-  g.translate(pad, pad);
-  g.lineCap = "round";
-
-  // soft fuzzy edge
-  heartPath(g, w, h);
-  g.fillStyle = g.shadowColor = color;
-  g.shadowBlur = cell * 0.1;
-  g.fill();
-  g.clip();
-
-  // lit top, shaded towards the tip
-  const grad = g.createLinearGradient(0, 0, 0, h);
-  grad.addColorStop(0, "rgba(255,255,255,0.18)");
-  grad.addColorStop(1, "rgba(0,0,0,0.28)");
-  g.shadowBlur = 0;
-  g.fillStyle = grad;
-  g.fillRect(0, 0, w, h);
-
-  // yarn strands: from each lobe's top edge, curving down the sides into the middle tip (a V)
-  for (const side of [-1, 1]) {
-    for (let i = 0; i < 5; i++) {
-      const t = (i + 0.5) / 5;
-      const lx = 0.06 + t * 0.4; // left-lobe x, mirrored for the right
-      const top = 0.3 - Math.sqrt(Math.max(0, 0.235 ** 2 - (lx - 0.26) ** 2));
-      const x = 0.5 + side * (0.5 - lx);
-      const cx = 0.5 + side * (0.5 - lx) * 0.75;
-      airbrush(g, i % 2 ? "rgba(0,0,0,0.55)" : "rgba(255,255,255,0.5)", cell * 0.06, cell * 0.035,
-        [x * w, top * h, cx * w, 0.62 * h, (0.5 + side * 0.04) * w, 1.0 * h]);
-    }
+  if (!knitTex.naturalWidth) {
+    c.width = c.height = 8;
+    const g = c.getContext("2d");
+    g.fillStyle = color;
+    g.fillRect(0, 0, 8, 8);
+  } else {
+    c.width = knitTex.naturalWidth;
+    c.height = knitTex.naturalHeight;
+    const g = c.getContext("2d");
+    g.drawImage(knitTex, 0, 0);
+    g.globalCompositeOperation = "multiply";
+    g.fillStyle = color;
+    g.fillRect(0, 0, c.width, c.height);
   }
-  // centre valley and inner edge shadow give it depth
-  airbrush(g, "rgba(0,0,0,0.4)", cell * 0.07, cell * 0.08, [0.5 * w, 0.2 * h, 0.5 * w, 0.6 * h, 0.5 * w, h]);
-  g.save();
-  g.translate(-AWAY, 0);
-  heartPath(g, w, h);
-  g.restore();
-  g.strokeStyle = g.shadowColor = "rgba(0,0,0,0.3)";
-  g.lineWidth = cell * 0.1;
-  g.shadowBlur = cell * 0.1;
-  g.shadowOffsetX = AWAY;
-  g.stroke();
+  tinted.set(color, c);
+  return c;
+}
 
-  const s = { c, ox: -(pad + w / 2), oy: -(pad + h / 2) };
-  sprites.set(key, s);
-  return s;
+// One grid square of seamless stockinette (pattern scaled so V-columns read at stitch size).
+function stampKnit(tex, x, y, cell) {
+  const pat = ctx.createPattern(tex, "repeat");
+  if (!pat) {
+    ctx.fillStyle = "#888";
+    ctx.fillRect(x, y, cell + 1, cell + 1);
+    return;
+  }
+  // ~6 stockinette columns across the texture → one column ≈ cell px
+  const scale = (cell * 6) / Math.max(tex.width, 1);
+  if (pat.setTransform) pat.setTransform(new DOMMatrix().scale(scale, scale));
+  ctx.fillStyle = pat;
+  ctx.fillRect(x, y, cell + 1, cell + 1);
 }
 
 const hex = (rgb) => "#" + rgb.map((v) => Math.min(255, Math.round(v / 24) * 24).toString(16).padStart(2, "0")).join("");
-const noise = (r, c, n) => { const s = Math.sin(r * 127.1 + c * 311.7 + n * 74.7) * 43758.5453; return s - Math.floor(s) - 0.5; };
 
 function render(bgOnly = false) {
   const cell = Number(ui.size.value);
@@ -138,10 +97,6 @@ function render(bgOnly = false) {
   if (mode !== "none") {
     ctx.fillStyle = ui.bg.value;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    if (mode === "knit") {
-      ctx.fillStyle = "rgba(0,0,0,0.35)"; // gaps between stitches read darker
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
   }
 
   for (let r = 0; r < rows; r++)
@@ -149,14 +104,8 @@ function render(bgOnly = false) {
       const i = r * cols + c;
       if (!ink[i] && mode !== "knit") continue;
       const color = !ink[i] ? ui.bg.value : ui.useImage.checked ? hex(cells[i].slice(0, 3)) : ui.color.value;
-      const s = sprite(color, cell);
-      // small hand-stamped wobble
-      const a = noise(r, c, 1) * 0.12;
-      ctx.setTransform(Math.cos(a), Math.sin(a), -Math.sin(a), Math.cos(a),
-        (c + 0.5 + noise(r, c, 2) * 0.05) * cell, (r + 0.5 + noise(r, c, 3) * 0.05) * cell);
-      ctx.drawImage(s.c, s.ox, s.oy);
+      stampKnit(tintedKnit(color), c * cell, r * cell, cell);
     }
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
 }
 
 let queued = false;
